@@ -681,33 +681,33 @@ function isString(a: unknown): a is string {
 
 See this quick guide: https://twitter.com/mpocock1/status/1500813765973053440?s=20&t=ImUA-NnZc4iUuPDx-XiMTA
 
-## Props: One or the Other but not Both
+## Props: One or the other but not both
 
-Use the `in` keyword, function overloading, and union types to make components that take either one or another sets of props, but not both:
+Use the `never` type to type components to take either one or another set of props, but not both:
 
 ```tsx
-type Props1 = { foo: string };
-type Props2 = { bar: string };
+type Props1 = { foo: string; bar?: never };
+type Props2 = { bar: string; foo?: never };
 
-function MyComponent(props: Props1 | Props2) {
-  if ("foo" in props) {
-    // props.bar // error
-    return <div>{props.foo}</div>;
-  } else {
-    // props.foo // error
-    return <div>{props.bar}</div>;
+const OneOrTheOther = (props: Props1 | Props2) => {
+  if (typeof props.foo === "string") {
+    // `props.bar` is of type `never | undefined`
+    return <>{props.foo}</>;
   }
-}
-const UsageComponent = () => (
-  <div>
-    <MyComponent foo="foo" />
-    <MyComponent bar="bar" />
-    {/* <MyComponent foo="foo" bar="bar"/> // invalid */}
-  </div>
+  // `props.foo` is of type `never | undefined`
+  return <>{props.bar}</>;
+};
+const Component = () => (
+  <>
+    <OneOrTheOther /> {/* error */}
+    <OneOrTheOther foo="" />
+    <OneOrTheOther bar="" />
+    <OneOrTheOther foo="" bar="" /> {/* error */}
+  </>
 );
 ```
 
-[View in the TypeScript Playground](https://www.typescriptlang.org/play/?jsx=2#code/JYWwDg9gTgLgBAJQKYEMDG8BmUIjgcilQ3wFgAoCmATzCTgAUcwBnARjgF44BvOTCBABccFjCjAAdgHM4AXwDcVWvSYRWAJi684AIxRQRYiTPlLK5TAFdJGYBElwAstQDCuSJKSSYACjDMLCJqrBwAPoyBGgCUvBRwcMCYcL4ARAIQqYmOAeossTzxCXAA9CVwuawAdPpQpeVIUDhQRQlEMFZQjgA8ACbAAG4AfDyVLFUZct0l-cPmCXJwSAA2LPSF5MX1FYETgtuNza1w7Z09syNjNQZTM4ND8-IUchRoDmJwAKosKNJI7uAHN4YCJkOgYFUAGKubS+WKcIYpIp9e7HbouAGeYH8QScdKCLIlIZojEeIE+PQGPG1QnEzbFHglABUcHRbjJXgpGTxGSytWpBlSRO2UgGKGWwF6cCZJRe9OmFwo0QUQA)
+[View in the TypeScript Playground.](https://www.typescriptlang.org/play?jsx=4#code/JYWwDg9gTgLgBAJQKYEMDG8BmUIjgIilQ3wFgAoCmATzCTgAUcwBnARjgF44BvOTCBABccFjCjAAdgHMA3HABGKKAH4RkpADckUOAF8qtekwisATF16LlIsRJnyBENXA3bdByuTQRJYuADyGgFQACoAFkgBMJG63AAUYMwsIiasHAA+jMlmAJRcAHy8FHBwwJhw8TR0EBVJpiwAdE5cnNz4dlLS+Pk8JaVwAPSDcAAG9ayNSlCjZSxwtXDV9G46-aVEMACuUJJwADwFPBNNTnr7gwX9enBIADYs9H3kA0Mj48nNgrPA84vLri0axeA02Oz2h2On2m50u1wonh8fngAGFcJANJJ4Al8pwivF+od1gcglEwpForEhkUeIMAFS3KA4XR0waeV77UkhCJRGI6fiCTj4fDU4mc4Lk3lU6ZCkVwkGlcVknmU-lOWXWKAay68emM5lwVnsg7y3IUIA)
 
 Further reading: [how to ban passing `{}` if you have a `NoFields` type.](http://www.javiercasas.com/articles/typescript-impossible-states-irrepresentable)
 
