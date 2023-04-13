@@ -17,6 +17,9 @@ const App = ({ message }: AppProps) => <div>{message}</div>;
 // you can choose annotate the return type so an error is raised if you accidentally return some other type
 const App = ({ message }: AppProps): JSX.Element => <div>{message}</div>;
 
+// Try using Reacts own type 'React.ReactElement' instead of 'JSX.Element' 
+const App = ({ message }: AppProps): React.ReactElement => <div>{message}</div>;
+
 // you can also inline the type declaration; eliminates naming the prop types, but looks repetitive
 const App = ({ message }: { message: string }) => <div>{message}</div>;
 ```
